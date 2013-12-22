@@ -7,14 +7,7 @@
 # 3. Extract major verbs -> instance methods
 # 4. Group instance methods into classes
 
-Blackjack
-Card game
-Card
-Player
-Dealer
-Game
-Value
-Deck
+
 
 class Card
   attr_accessor :suit, :value
