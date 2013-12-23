@@ -200,18 +200,21 @@ class Blackjack
       puts "#{player.name}'s' total is now: #{player.total}"
       blackjack_or_bust?(player)
     end
+    puts "#{player.name} stays at #{player.total}"
   end
 
   def dealer_turn
+    puts "Dealer's turn."
     blackjack_or_bust?(dealer)
 
     while dealer.total < 17
       new_card = deck.deal_one
       puts "Dealing new card for dealer: #{new_card}"
-      dealer.add_card(deck.deal_one)
+      dealer.add_card(new_card)
       puts "Dealer total: #{dealer.total}"
       blackjack_or_bust?(dealer)
     end
+    puts "Dealer stays at #{dealer.total}."
   end
 
   def compare_hands
@@ -240,21 +243,5 @@ end
 
 game = Blackjack.new
 game.start
-
-# choose
-
-# stay
-
-
-# repeat
-
-
-
-# busts
-
-# dealer_wins
-
-# player_wins
-
 
 
