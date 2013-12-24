@@ -75,7 +75,7 @@ module Hand
   # assumes an array of cards named.
 
   def is_busted?
-    total > 21
+    total > Blackjack::BLACKJACK_AMOUNT
   end
 
   def total
@@ -94,7 +94,7 @@ module Hand
 
     # correct for aces
     arr.select { |e| e == 'A' }.count.times do
-      total -= 10 if total > 21
+      total -= 10 if total > Blackjack::BLACKJACK_AMOUNT
     end
 
     total
@@ -134,6 +134,8 @@ class Dealer
 end
 
 class Blackjack
+  BLACKJACK_AMOUNT = 21
+  DEALER_HIT_MIN = 17
   attr_accessor :player, :dealer, :deck
 
   def initialize
@@ -160,20 +162,20 @@ class Blackjack
   end
 
   def blackjack_or_bust?(player_or_dealer)
-    if player_or_dealer.total == 21
+    if player_or_dealer.total == BLACKJACK_AMOUNT
       if player_or_dealer.is_a?(Dealer)
         puts "Sorry, dealer hit plackjack. #{player.name} loses"
       else
         puts "Congratulations, you hit 21! #{player.name} win!"
       end
-      exit
+      play_again?
     elsif player_or_dealer.is_busted?
       if player_or_dealer.is_a?(Dealer)
-        puts "Dealer busts, you win. #{player.name} wins."
+        puts "Dealer busts, #{player.name} wins."
       else
         puts "Sorry, #{player.name} busted."
       end
-      exit
+      play_again?
     end
   end
 
@@ -204,10 +206,11 @@ class Blackjack
   end
 
   def dealer_turn
+
     puts "Dealer's turn."
     blackjack_or_bust?(dealer)
 
-    while dealer.total < 17
+    while dealer.total < DEALER_HIT_MIN
       new_card = deck.deal_one
       puts "Dealing new card for dealer: #{new_card}"
       dealer.add_card(new_card)
@@ -217,17 +220,37 @@ class Blackjack
     puts "Dealer stays at #{dealer.total}."
   end
 
-  def compare_hands
+  def who_won?
     dealer.show_hand
     player.show_hand
     puts ""
 
     if dealer.total > player.total
       puts "Sorry, dealer wins."
-    elsif dealer.total > player.total
-      puts "Congrautlations, you win"
+    elsif dealer.total < player.total
+      puts "Congrautlations, #{player.name} wins!"
     else
       puts "Push"
+    end
+    play_again?
+  end
+
+  def play_again?
+    puts "Do you want to play again? 1) Yes 2) No"
+    answer = gets.chomp
+    if !['1', '2'].include?(answer)
+      play_again?
+    end
+    if answer == '1'
+      puts "Starting new game..."
+      puts ""
+      deck = Deck.new
+      player.cards = []
+      dealer.cards = []
+      start
+    else
+      puts "Goodbye!"
+      exit
     end
   end
 
@@ -237,7 +260,7 @@ class Blackjack
     show_flop
     player_turn
     dealer_turn
-    compare_hands
+    who_won?
   end
 end
 
